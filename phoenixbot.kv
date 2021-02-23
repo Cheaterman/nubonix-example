@@ -1,0 +1,99 @@
+#:import rgba kivy.utils.rgba
+
+
+BoxLayout:
+    SideBar:
+        id: side_bar
+        current_screen: main_view.current
+        size_hint_x: None
+        width: dp(60)
+
+    MainView:
+        id: main_view
+        current: side_bar.current_screen
+
+
+<SideBar@FloatLayout>:
+    current_screen: 'home'
+
+    canvas.before:
+        Color:
+            rgba: rgba('#232323')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        pos_hint: {'top': 1}
+        size_hint_y: None
+        height: self.minimum_height
+
+        Image:
+            source: 'images/birdbot.png'
+            mipmap: True
+            pos_hint: {'center_x': .5}
+            size_hint: 2/3, None
+            height: dp(85)
+
+        SideBarButton:
+            sidebar: root
+            target_screen: 'home'
+
+        SideBarButton:
+            sidebar: root
+            target_screen: 'profiles'
+
+        SideBarButton:
+            sidebar: root
+            target_screen: 'proxies'
+
+        SideBarButton:
+            sidebar: root
+            target_screen: 'settings'
+
+
+<SideBarButton@ToggleButtonBehavior+FloatLayout>:
+    sidebar: None
+    target_screen: ''
+    group: 'sidebar'
+    color: rgba('#e22f09')
+    state: 'down' if self.sidebar and self.sidebar.current_screen == self.target_screen else 'normal'
+    size_hint_y: None
+    height: dp(45)
+    on_press: self.sidebar.current_screen = self.target_screen
+
+    canvas.before:
+        Color:
+            rgba:
+                (
+                self.color[:3] + [1 if self.state == 'down' else 0]
+                if self.color else (0, 0, 0, 0)
+                )
+        Rectangle:
+            pos: self.pos
+            size: dp(4), self.height
+        Color:
+            rgba:
+                (
+                self.color[:3] + [.5 if self.state == 'down' else 0]
+                if self.color else (0, 0, 0, 0)
+                )
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    Image:
+        source:
+            'images/{}.png'.format(
+            root.target_screen if root.state == 'normal'
+            else root.target_screen + '_alt'
+            )
+        mipmap: True
+        pos_hint: {'center': (.5, .5)}
+        size_hint: .5, .5
+
+
+<MainView@ScreenManager>:
+    Screen:
+        name: 'home'
